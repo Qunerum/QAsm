@@ -1,0 +1,9 @@
+data
+
+int x 10
+
+end
+
+add x 8
+sub x 3
+println x
