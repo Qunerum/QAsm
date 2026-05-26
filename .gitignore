@@ -1,0 +1,6 @@
+bin/
+build/
+*.sh
+*.bat
+*.qc
+*.kate-swp

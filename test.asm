@@ -13,7 +13,6 @@ section .bss
     bufor resb 12
 section .text
     global _start
-
 intToText:
     mov rcx, 0
     mov ebx, 10
@@ -25,7 +24,6 @@ intToText:
     inc rcx
     cmp eax, 0
     jne .ittLoop
-
     lea rdi, [rel bufor]
     mov rdx, rcx
     lea rsi, [rel bufor]
@@ -34,7 +32,6 @@ intToText:
     mov [rdi], al
     inc rdi
     loop .ittLoopWrite
-;     mov byte [rdi], 10
     inc rdx
     ret
 
@@ -60,7 +57,7 @@ prt:
 ; sub a 3
 ; mul a 2
 ; div a 8
-; println a is v(a)
+; println a is v(a) ] 5
 _start:
     mov eax, [rel var_a]
     add eax, 13

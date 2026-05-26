@@ -1,6 +1,7 @@
 data
 
 int x 10
+string text "Hello, World!"
 
 end
 
