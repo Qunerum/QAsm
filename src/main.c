@@ -29,6 +29,7 @@ int main(int argc, char* argv[]) {
     if (file == NULL) { printf("Error: Cannot open or create file '%s'!\n", targetFile); return 1; }
     for (int i = 0; i < CT_COUNT; i++) { ct[i] = (char*)kmalloc(MAX_LINE_SIZE); }
     f = fopen("bin/main.asm", "w");
+    setF(f);
     if (f == NULL) { printf("Error: Cannot create file 'main.asm' !\n"); return 1; }
     while (fgets(ct[0], MAX_LINE_SIZE, file) != NULL) { if (ct[0][0] == '\n' || ct[0][0] == '\0') continue; runLine(ct[0]); }
     fprintf(f, "    mov rax, 60\n");
@@ -40,29 +41,16 @@ int main(int argc, char* argv[]) {
     return 0;
 }
 static int dataLoaded = 0, dataCollecting = 0;
-// fprintf(f, "    \n");
 void runLine(char* line) {
     ctc(3); ctc(4); ctc(5); ctc(6); ctc(7);
     trimStart(line, ' ', ct[3]);
     if (ct[3][0] == ']') { return; }
+    int l = len(ct[3]) - 1;
+    if (l >= 0 && ct[3][l] == '\n') { ct[3][l] = '\0'; }
+    if (ct[3][0] == '\0' || ct[3][0] == '\r') { return; }
     splitStart(ct[3], ' ', ct[4], ct[7]);
-    if (dataLoaded) {
-        // 4 - Command
-        // 5 - ;a;
-        // 6 - ;b;
-        // 7 - ARGS ALL
-        // 8 - tmp
-        for (int i = 0; i < cmd_count; i++) {
-            if (is(cmds[i].cmd, ct[4])) {
-                if (contains(cmds[i].data, ";a;") || contains(cmds[i].data, ";b;")) { splitStart(ct[7], ' ', ct[5], ct[6]); }
 
-                while (contains(cmds[i].data, ";a;")) { replace(cmds[i].data, ";a;", ct[5], ct[8]); copyStr(cmds[i].data, ct[8]); }
-                while (contains(cmds[i].data, ";b;")) { replace(cmds[i].data, ";b;", ct[6], ct[8]); copyStr(cmds[i].data, ct[8]); }
-
-                fprintf(f, "    %s\n", cmds[i].data);
-            }
-        }
-    } else {
+    if (dataLoaded) { for (int i = 0; i < cmd_count; i++) { if (is(cmds[i].cmd, ct[4])) { cmds[i].data(ct[7]); return; } } } else {
         if (startWith(ct[3], "data")) {
             dataCollecting = 1;
             fprintf(f, "default rel\n");
@@ -110,8 +98,8 @@ void runLine(char* line) {
         }
         if (dataCollecting && !dataLoaded) {
             splitStart(ct[7], ' ', ct[5], ct[6]);
-            if (is(ct[4], "int")) { fprintf(f, "    var_%s dd %s\n", ct[5], ct[6]); return; }
-            if (is(ct[4], "string")) { fprintf(f, "    var_%s db %s\n    len_%s equ $ - var_%s\n", ct[5], ct[6], ct[5], ct[5]); return; }
+            if (is(ct[4], "int")) { fprintf(f, "    vint_%s dd %s\n", ct[5], ct[6]); return; }
+            if (is(ct[4], "string")) { fprintf(f, "    vstr_%s db %s\n    len_%s equ $ - vstr_%s\n", ct[5], ct[6], ct[5], ct[5]); return; }
         }
     }
 }

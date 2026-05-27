@@ -5,6 +5,9 @@ string text "Hello, World!"
 
 end
 
-add x 8
-sub x 3
-println x
+] add x 8
+] sub x 3
+prti x
+prtln
+prt text
+prtln

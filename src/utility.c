@@ -8,7 +8,8 @@ int isAny(char* a, char* b[]) {
 }
 void splitStart(char* in, char delimiter, char* outA, char* outB) {
     int i = 0, ia = 0, ib = 0, found = 0;
-    outA[0] = '\0'; outB[0] = '\0';
+    if (outA != NULL) outA[0] = '\0';
+    if (outB != NULL) outB[0] = '\0';
     if (in == 0 || in[0] == '\0') return;
     while(in[i] != '\0') {
             if (in[i] == delimiter && !found) found = 1;
