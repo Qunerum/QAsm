@@ -1,13 +1,13 @@
 data
-
-int x 10
-string text "Hello, World!"
-
+    int x 10
+    string text1 "Hello, World!", 10
+    string text2 "There is you value 'x': "
+    string text3 "Program is finished!", 10
 end
 
-] add x 8
-] sub x 3
+prtln
+prt text1
+prt text2
 prti x
 prtln
-prt text
-prtln
+prt text3
