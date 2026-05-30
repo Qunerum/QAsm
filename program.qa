@@ -7,7 +7,26 @@ end
 
 prtln
 prt text1
-prt text2
-prti x
-prtln
+call X
+
+add x 15
+call X
+
+sub x 5
+call X
+
+mul x 2
+call X
+
+div x 4
+call X
+
 prt text3
+
+em
+
+step X
+    prt text2
+    prti x
+    prtln
+es
