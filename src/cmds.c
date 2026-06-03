@@ -7,6 +7,7 @@ static FILE* f;
 void setF(FILE* file) { f = file; }
 void split(char* data) { splitStart(data, ' ', ct[5], ct[6]); }
 
+void startMain(char* args) { (void)args; fprintf(f, "_start:\n"); }
 void endMain(char* args) { (void)args; fprintf(f, "\tmov rax, 60\n\tmov rdi, 0\n\tsyscall\n"); }
 
 void step(char* args) { fprintf(f, "QAF_%s: ; Step\n", args); }
@@ -36,6 +37,7 @@ void div(char* args) { split(args); fprintf(f, "\tmov eax, [rel vint_%s]\n\tcdq\
 // mov [rel var_a], eax ; div a 8
 
 qaCmd cmds[] = {
+    {"sm", startMain},
     {"em", endMain},
 
     {"step", step},

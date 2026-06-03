@@ -1,32 +1,11 @@
 data
-    int x 10
-    string text1 "Hello, World!", 10
-    string text2 "There is you value 'x': "
-    string text3 "Program is finished!", 10
+	string text "Hello, World!", 10, "x is: "
+	int x 0
 end
 
-prtln
-prt text1
-call X
-
-add x 15
-call X
-
-sub x 5
-call X
-
-mul x 2
-call X
-
-div x 4
-call X
-
-prt text3
-
+sm
+	add x 10
+	prt text
+	prti x
+	prtln
 em
-
-step X
-    prt text2
-    prti x
-    prtln
-es
