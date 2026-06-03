@@ -6,6 +6,8 @@ end
 sm
 	add x 10
 	prt text
+	sub x 2
+	add x 5
 	prti x
 	prtln
 em

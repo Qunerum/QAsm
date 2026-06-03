@@ -18,23 +18,10 @@ void prt(char* args) { fprintf(f, "\tlea rsi, [rel vstr_%s]\n\tmov rdx, len_%s\n
 void prti(char* args) { fprintf(f, "\tmov eax, [rel vint_%s]\n\tcall intToText\n\tcall prt ; Print int\n", args); }
 void prtln(char* args) { (void)args; fprintf(f, "\tlea rsi, [rel nl]\n\tmov rdx, nll\n\tcall prt ; Print line\n"); }
 
-void add(char* args) { split(args); fprintf(f, "\tmov eax, [rel vint_%s]\n\tadd eax, %s\n\tmov [rel vint_%s], eax ; Add\n", ct[5], ct[6], ct[5]); }
-void sub(char* args) { split(args); fprintf(f, "\tmov eax, [rel vint_%s]\n\tsub eax, %s\n\tmov [rel vint_%s], eax ; Sub\n", ct[5], ct[6], ct[5]); }
+void add(char* args) { split(args); fprintf(f, "\tadd dword [rel vint_%s], %s ; Add\n", ct[5], ct[6]); }
+void sub(char* args) { split(args); fprintf(f, "\tsub dword [rel vint_%s], %s ; Sub\n", ct[5], ct[6]); }
 void mul(char* args) { split(args); fprintf(f, "\tmov eax, [rel vint_%s]\n\timul eax, %s\n\tmov [rel vint_%s], eax ; Mul\n", ct[5], ct[6], ct[5]); }
 void div(char* args) { split(args); fprintf(f, "\tmov eax, [rel vint_%s]\n\tcdq\n\tmov ecx, %s\n\tidiv ecx\n\tmov [rel vint_%s], eax ; Div\n", ct[5], ct[6], ct[5]); }
-// mov eax, [rel var_a]
-// sub eax, 3
-// mov [rel var_a], eax ; sub a 3
-
-// mov eax, [rel var_a]
-// imul eax, 2
-// mov [rel var_a], eax ; mul a 2
-
-// mov eax, [rel var_a]
-// cdq
-// mov ecx, 8
-// idiv ecx
-// mov [rel var_a], eax ; div a 8
 
 qaCmd cmds[] = {
     {"sm", startMain},
