@@ -1,1 +1,2 @@
 **/Makefile linguist-vendored
+**/*.asm linguist-vendored
