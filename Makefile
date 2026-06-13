@@ -1,45 +1,45 @@
 CC = gcc
 CFLAGS = -Wall -Wextra -O2 -Iinclude
 
-SRC_DIR = src
-BIN_DIR = bin
-BUILD_DIR = build
+SRC = src
+OBJ = obj
+BUILD = build
 
-COMPILER_OBJ = $(BIN_DIR)/main.o \
-               $(BIN_DIR)/memory.o \
-               $(BIN_DIR)/cmds.o \
-               $(BIN_DIR)/utility.o
+OBJS = $(OBJ)/main.o \
+               $(OBJ)/memory.o \
+               $(OBJ)/cmds.o \
+               $(OBJ)/utility.o
 
-COMPILER_TARGET = $(BUILD_DIR)/qasm_compiler
+TARGET = $(BUILD)/qasm_compiler
 
 ASM = nasm
-ASM_SRC = bin/main.asm
-ASM_OBJ = $(BIN_DIR)/main_asm.o
-FINAL_TARGET = $(BUILD_DIR)/QAsm
+ASM_SRC = $(OBJ)/main.asm
+ASM_OBJ = $(OBJ)/main_asm.o
+FINAL_TARGET = $(BUILD)/QAsm
 
 .PHONY: all run clean
 
 all: $(FINAL_TARGET)
 
-$(BIN_DIR)/%.o: $(SRC_DIR)/%.c
-	@mkdir -p $(BIN_DIR)
+$(OBJ)/%.o: $(SRC)/%.c
+	@mkdir -p $(OBJ)
 	@$(CC) $(CFLAGS) -c $< -o $@
 
-$(COMPILER_TARGET): $(COMPILER_OBJ)
-	@mkdir -p $(BUILD_DIR)
-	@$(CC) $(CFLAGS) $(COMPILER_OBJ) -o $(COMPILER_TARGET)
+$(TARGET): $(OBJS)
+	@mkdir -p $(BUILD)
+	@$(CC) $(CFLAGS) $(OBJS) -o $(TARGET)
 
-$(ASM_SRC): $(COMPILER_TARGET)
+$(ASM_SRC): $(TARGET)
 	@echo "--- [QCC] Uruchamianie kompilatora w C... ---"
-	@./$(COMPILER_TARGET)
+	@./$(TARGET)
 
 $(ASM_OBJ): $(ASM_SRC)
-	@mkdir -p $(BIN_DIR)
+	@mkdir -p $(OBJ)
 	@echo "--- [QCC] Kompilacja assemblera (NASM)... ---"
 	@$(ASM) -f elf64 $(ASM_SRC) -o $(ASM_OBJ)
 
 $(FINAL_TARGET): $(ASM_OBJ)
-	@mkdir -p $(BUILD_DIR)
+	@mkdir -p $(BUILD)
 	@echo "--- [QCC] Linkowanie finalnej binarki (LD)... ---"
 	@ld $(ASM_OBJ) -o $(FINAL_TARGET)
 
@@ -48,4 +48,4 @@ run: all
 	@./$(FINAL_TARGET)
 
 clean:
-	@rm -rf $(BIN_DIR) $(BUILD_DIR) $(ASM_SRC)
+	@rm -rf $(OBJ) $(BUILD) $(ASM_SRC)

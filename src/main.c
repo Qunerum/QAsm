@@ -28,7 +28,7 @@ int main(int argc, char* argv[]) {
     }
     if (file == NULL) { printf("Error: Cannot open or create file '%s'!\n", targetFile); return 1; }
     for (int i = 0; i < CT_COUNT; i++) { ct[i] = (char*)kmalloc(MAX_LINE_SIZE); }
-    f = fopen("bin/main.asm", "w");
+    f = fopen("obj/main.asm", "w");
     setF(f);
     if (f == NULL) { printf("Error: Cannot create file 'main.asm' !\n"); return 1; }
     while (fgets(ct[0], MAX_LINE_SIZE, file) != NULL) { if (ct[0][0] == '\n' || ct[0][0] == '\0') continue; runLine(ct[0]); }
