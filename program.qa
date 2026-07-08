@@ -1,13 +1,18 @@
 data
-	string text "Hello, World!", 10, "x is: "
+	text t "Hello, World!", 10, "x is: "
 	int x 0
 end
 
 sm
 	add x 10
-	prt text
-	sub x 2
-	add x 5
+	prt t
+	call hello
 	prti x
 	prtln
+	prtn 10
+	prtln
 em
+
+step hello
+	add x 5
+es

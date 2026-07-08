@@ -86,7 +86,7 @@ void runLine(char* line) {
             fprintf(f, "\tloop .ittLoopWrite\n");
             fprintf(f, "\tinc rdx\n");
             fprintf(f, "\tret\n");
-            // if Linux
+
             fprintf(f, "prt:\n");
             fprintf(f, "\tmov rax, 1\n");
             fprintf(f, "\tmov rdi, 1\n");
@@ -96,8 +96,8 @@ void runLine(char* line) {
         }
         if (dataCollecting && !dataLoaded) {
             splitStart(ct[7], ' ', ct[5], ct[6]);
-            if (is(ct[4], "int")) { fprintf(f, "\tvint_%s dd %s\n", ct[5], ct[6]); return; }
-            if (is(ct[4], "string")) { fprintf(f, "\tvstr_%s db %s\n\tlen_%s equ $ - vstr_%s\n", ct[5], ct[6], ct[5], ct[5]); return; }
+            if (is(ct[4], "int")) { fprintf(f, "\t%s dd %s\n", ct[5], ct[6]); return; }
+            if (is(ct[4], "text")) { fprintf(f, "\t%s db %s\n\tlen_%s equ $ - %s\n", ct[5], ct[6], ct[5], ct[5]); return; }
         }
     }
 }
