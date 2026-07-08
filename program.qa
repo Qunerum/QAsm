@@ -12,7 +12,6 @@ sm
 	prtn 10
 	prtln
 em
-
 step hello
 	add x 5
 es

@@ -31,7 +31,10 @@ int main(int argc, char* argv[]) {
     f = fopen("obj/main.asm", "w");
     setF(f);
     if (f == NULL) { printf("Error: Cannot create file 'main.asm' !\n"); return 1; }
-    while (fgets(ct[0], MAX_LINE_SIZE, file) != NULL) { if (ct[0][0] == '\n' || ct[0][0] == '\0') continue; runLine(ct[0]); }
+    while (fgets(ct[0], MAX_LINE_SIZE, file) != NULL) {
+        if (ct[0][0] == '\n' || ct[0][0] == '\0') continue;
+        runLine(ct[0]);
+    }
     fclose(file);
     fclose(f);
     for (int i = 0; i < CT_COUNT; i++) { kfree(ct[i]); }

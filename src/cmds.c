@@ -24,6 +24,9 @@ void sub(char* args) { split(args); fprintf(f, "\tsub dword [rel %s], %s ; Sub\n
 void mul(char* args) { split(args); fprintf(f, "\tmov eax, [rel %s]\n\timul eax, %s\n\tmov [rel %s], eax ; Mul\n", ct[5], ct[6], ct[5]); }
 void div(char* args) { split(args); fprintf(f, "\tmov eax, [rel %s]\n\tcdq\n\tmov ecx, %s\n\tidiv ecx\n\tmov [rel %s], eax ; Div\n", ct[5], ct[6], ct[5]); }
 
+void insertTab(char* args) { fprintf(f, "\t%s\n", args); }
+void insert(char* args) { fprintf(f, "%s\n", args); }
+
 qaCmd cmds[] = {
     {"sm", startMain},
     {"em", endMain},
@@ -41,5 +44,8 @@ qaCmd cmds[] = {
     {"sub", sub},
     {"mul", mul},
     {"div", div},
+
+    {"t.", insertTab},
+    {".", insert},
 };
 int cmd_count = sizeof(cmds) / sizeof(qaCmd);
