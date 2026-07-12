@@ -13,28 +13,40 @@ void cmd_write_file(const char* filename, const char* content) {
     fprintf(file, "%s", content);
     fclose(file);
 }
-
+int count_lines(const char *filename) {
+    FILE *fp = fopen(filename, "r");
+    if (fp == NULL) return -1;
+    int count = 0, ch;
+    while ((ch = fgetc(fp)) != EOF) { if (ch == '\n') count++; }
+    fclose(fp);
+    return count;
+}
 char* ct[CT_COUNT];
 void ctc(int i) { ct[i][0] = '\0'; }
 FILE* f;
 int main(int argc, char* argv[]) {
     init_memory();
     char* targetFile;
-    if (argc < 2) { targetFile = "program.qa"; } else { targetFile = argv[1]; }
+    char* outFile;
+    if (argc <= 1) { targetFile = "program.qa"; outFile = "outQAsm.asm"; } else if (argc == 2) { targetFile = argv[1]; outFile = "outQAsm.asm"; } else { targetFile = argv[1]; outFile = argv[2]; }
     FILE* file = fopen(targetFile, "r");
     if (file == NULL && is(targetFile, "program.qa")) {
-        cmd_write_file("program.qa", "data\n\tstring text \"Hello, World!\", 10\nend\n\nsm\n\tprt text\nem");
+        cmd_write_file("program.qa", "data\n\ttext text \"Hello, World!\", 10\nend\n\nsm\n\tprt text\nem");
         file = fopen("program.qa", "r");
     }
     if (file == NULL) { printf("Error: Cannot open or create file '%s'!\n", targetFile); return 1; }
     for (int i = 0; i < CT_COUNT; i++) { ct[i] = (char*)kmalloc(MAX_LINE_SIZE); }
-    f = fopen("obj/main.asm", "w");
+    f = fopen(outFile, "w");
     setF(f);
-    if (f == NULL) { printf("Error: Cannot create file 'main.asm' !\n"); return 1; }
+    if (f == NULL) { printf("Error: Cannot create file '%s' !\n", outFile); return 1; }
+    int cnt = 0, maxCnt = count_lines(targetFile);
     while (fgets(ct[0], MAX_LINE_SIZE, file) != NULL) {
+        cnt++;
+        printf("\e[0;33mCompiling...  \e[1;37m(%d/%d)\r", cnt, maxCnt);
         if (ct[0][0] == '\n' || ct[0][0] == '\0') continue;
         runLine(ct[0]);
     }
+    printf("\e[0;32mCompiled!     (%d/%d)\e[0m\n", cnt, maxCnt);
     fclose(file);
     fclose(f);
     for (int i = 0; i < CT_COUNT; i++) { kfree(ct[i]); }

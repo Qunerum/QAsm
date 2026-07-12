@@ -44,7 +44,7 @@ $(FINAL_TARGET): $(ASM_OBJ)
 	@ld $(ASM_OBJ) -o $(FINAL_TARGET)
 
 run: all
-	@clear
+# 	@clear
 	@./$(FINAL_TARGET)
 
 clean:
