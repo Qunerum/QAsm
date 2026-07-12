@@ -4,6 +4,10 @@
 #include "../include/utility.h"
 #include "../include/cmds.h"
 
+#define RST      "\033[0m"
+#define RED      "\033[1;38;5;160m"
+#define COMPLETE "\033[1;38;5;2m"
+#define ONGOING  "\033[0;38;5;220m"
 void cmd_write_file(const char* filename, const char* content) {
     FILE* file = fopen(filename, "w");
     if (file == NULL) {
@@ -34,19 +38,19 @@ int main(int argc, char* argv[]) {
         cmd_write_file("program.qa", "data\n\ttext text \"Hello, World!\", 10\nend\n\nsm\n\tprt text\nem");
         file = fopen("program.qa", "r");
     }
-    if (file == NULL) { printf("Error: Cannot open or create file '%s'!\n", targetFile); return 1; }
+    if (file == NULL) { printf(RED"Error: Cannot open or create file '%s'!\n"RST, targetFile); return 1; }
     for (int i = 0; i < CT_COUNT; i++) { ct[i] = (char*)kmalloc(MAX_LINE_SIZE); }
     f = fopen(outFile, "w");
     setF(f);
-    if (f == NULL) { printf("Error: Cannot create file '%s' !\n", outFile); return 1; }
+    if (f == NULL) { printf(RED"Error: Cannot create file '%s' !\n"RST, outFile); return 1; }
     int cnt = 0, maxCnt = count_lines(targetFile);
     while (fgets(ct[0], MAX_LINE_SIZE, file) != NULL) {
         cnt++;
-        printf("\e[0;33mCompiling...  \e[1;37m(%d/%d)\r", cnt, maxCnt);
+        printf(ONGOING"Compiling...  (%d/%d)\r"RST, cnt, maxCnt);
         if (ct[0][0] == '\n' || ct[0][0] == '\0') continue;
         runLine(ct[0]);
     }
-    printf("\e[0;32mCompiled!     (%d/%d)\e[0m\n", cnt, maxCnt);
+    printf(COMPLETE"Compiled!     (%d/%d)\e[0m\n"RST, cnt, maxCnt);
     fclose(file);
     fclose(f);
     for (int i = 0; i < CT_COUNT; i++) { kfree(ct[i]); }
