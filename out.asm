@@ -13,6 +13,7 @@ section .data
 	; User data:
 	text db "Hello, World!", 10
 	len_text equ $ - text
+	x dd 11
 section .bss
 	itt_bfr resb 21
 	prtbh_bfr resb 64
@@ -114,6 +115,30 @@ _start:
 	lea rsi, text
 	mov rdx, len_text
 	call prt ; Print text
+	RT a, 11
+	call intToText
+	call prt ; Print number
+	call prtln ; Print line
+	RT a, 11
+	RT b, 5
+	call prtB ; Print binary number
+	call prtln ; Print line
+	RT a, 11
+	RT b, 3
+	call prtH ; Print HEX number
+	call prtln ; Print line
+	RT a, [rel x]
+	call intToText
+	call prt ; Print int
+	call prtln ; Print line
+	RT a, [rel x]
+	RT b, 5
+	call prtB ; Print binary int
+	call prtln ; Print line
+	RT a, [rel x]
+	RT b, 3
+	call prtH ; Print HEX int
+	call prtln ; Print line
 	mov rax, 60
 	mov rdi, 0
 	syscall

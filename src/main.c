@@ -37,7 +37,7 @@ int main(int argc, char* argv[]) {
     if (argc <= 1) { targetFile = "program.qa"; outFile = "outQAsm.asm"; } else if (argc == 2) { targetFile = argv[1]; outFile = "outQAsm.asm"; } else { targetFile = argv[1]; outFile = argv[2]; }
     FILE* file = fopen(targetFile, "r");
     if (file == NULL && is(targetFile, "program.qa")) {
-        cmd_write_file("program.qa", "data\n\ttext text \"Hello, World!\", 10\nend\n\nsm\n\tprt text\nem");
+        cmd_write_file("program.qa", "data\n\ttext text \"Hello, World!\", 10\nend\n\nsm\n\tprt text\nem\n");
         file = fopen("program.qa", "r");
     }
     if (file == NULL) { printf(RED"Error: Cannot open or create file '%s'!\n"RST, targetFile); return 1; }

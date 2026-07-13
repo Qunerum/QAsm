@@ -1,7 +1,27 @@
 data
 	text text "Hello, World!", 10
+	int x 11
 end
 
 sm
 	prt text
+
+	prtn 11
+	prtln
+
+	prtnb 11 5
+	prtln
+
+	prtnh 11 3
+	prtln
+
+	prti x
+	prtln
+
+	prtib x 5
+	prtln
+
+	prtih x 3
+	prtln
+
 em
