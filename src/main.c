@@ -8,6 +8,7 @@
 #define RED      "\033[1;38;5;160m"
 #define COMPLETE "\033[1;38;5;2m"
 #define ONGOING  "\033[0;38;5;220m"
+#define VERSION  "0.0.21"
 void cmd_write_file(const char* filename, const char* content) {
     FILE* file = fopen(filename, "w");
     if (file == NULL) {
@@ -28,6 +29,7 @@ int count_lines(const char *filename) {
 char* ct[CT_COUNT];
 void ctc(int i) { ct[i][0] = '\0'; }
 FILE* f;
+static void add(int t, char* text) { fprintf(f, "%s%s\n", t ? "\t" : "", text); }
 int main(int argc, char* argv[]) {
     init_memory();
     char* targetFile;
@@ -44,6 +46,7 @@ int main(int argc, char* argv[]) {
     setF(f);
     if (f == NULL) { printf(RED"Error: Cannot create file '%s' !\n"RST, outFile); return 1; }
     int cnt = 0, maxCnt = count_lines(targetFile);
+    add(0, "; = > QAsm v. "VERSION);
     while (fgets(ct[0], MAX_LINE_SIZE, file) != NULL) {
         cnt++;
         printf(ONGOING"Compiling...  (%d/%d)\r"RST, cnt, maxCnt);
@@ -56,7 +59,7 @@ int main(int argc, char* argv[]) {
     for (int i = 0; i < CT_COUNT; i++) { kfree(ct[i]); }
     return 0;
 }
-static int dataLoaded = 0, dataCollecting = 0;
+static int dataLoaded = 0, dataCollecting = 0, lb = 0;
 void runLine(char* line) {
     ctc(3); ctc(4); ctc(5); ctc(6); ctc(7);
     trimStart(line, ' ', ct[4]);
@@ -69,48 +72,124 @@ void runLine(char* line) {
     splitStart(ct[3], ' ', ct[4], ct[7]);
 
     if (dataLoaded) { for (int i = 0; i < cmd_count; i++) { if (is(cmds[i].cmd, ct[4])) { cmds[i].data(ct[7]); return; } } } else {
+        if (ct[4][0] == '.') { fprintf(f, "%s%s\n", ct[4][1] == 't' ? "\t" : "", ct[7]); lb = 1; return; }
         if (startWith(ct[3], "data")) {
             dataCollecting = 1;
-            fprintf(f, "default rel\n");
-            fprintf(f, "section .data\n");
-            fprintf(f, "\tnl db 10\n");
-            fprintf(f, "\tnll equ $ - nl\n");
+            if (lb) add(0, "; = > QAsm v. "VERSION);
+            add(0, "default rel");
+            add(0, "; = > MACROS");
+            add(0, "%macro RT 2");
+            add(1, "mov eax, %2");
+            add(1, "mov [rel qai%1], eax");
+            add(0, "%endmacro");
+            add(0, "; = > END MACROS");
+            add(0, "section .data");
+            add(1, "; QAsm data:");
+            add(1, "qaia dd 0 ; QAsm int A");
+            add(1, "qaib dd 0 ; QAsm int B");
+            add(1, "; User data:");
             return;
         }
         if (dataCollecting && startWith(ct[3], "end")) {
             dataLoaded = 1;
             dataCollecting = 0;
-            fprintf(f, "section .bss\n");
-            fprintf(f, "\tbufor resb 12\n");
-            fprintf(f, "section .text\n");
-            fprintf(f, "\tglobal _start\n");
-            fprintf(f, "intToText:\n");
-            fprintf(f, "\tmov rcx, 0\n");
-            fprintf(f, "\tmov ebx, 10\n");
-            fprintf(f, ".ittLoop:\n");
-            fprintf(f, "\tmov edx, 0\n");
-            fprintf(f, "\tdiv ebx\n");
-            fprintf(f, "\tadd edx, 48\n");
-            fprintf(f, "\tpush rdx\n");
-            fprintf(f, "\tinc rcx\n");
-            fprintf(f, "\tcmp eax, 0\n");
-            fprintf(f, "\tjne .ittLoop\n");
-            fprintf(f, "\tlea rdi, [rel bufor]\n");
-            fprintf(f, "\tmov rdx, rcx\n");
-            fprintf(f, "\tlea rsi, [rel bufor]\n");
-            fprintf(f, ".ittLoopWrite:\n");
-            fprintf(f, "\tpop rax\n");
-            fprintf(f, "\tmov [rdi], al\n");
-            fprintf(f, "\tinc rdi\n");
-            fprintf(f, "\tloop .ittLoopWrite\n");
-            fprintf(f, "\tinc rdx\n");
-            fprintf(f, "\tret\n");
-
-            fprintf(f, "prt:\n");
-            fprintf(f, "\tmov rax, 1\n");
-            fprintf(f, "\tmov rdi, 1\n");
-            fprintf(f, "\tsyscall\n");
-            fprintf(f, "\tret\n");
+            add(0, "section .bss");
+            add(1, "itt_bfr resb 21");
+            add(1, "prtbh_bfr resb 64");
+            add(0, "section .text");
+            add(1, "global _start");
+            add(0, "; = = = INT TO TEXT = = =");
+            add(0, "; RT a, [value]");
+            add(0, "; call intToText");
+            add(0, "; call prt");
+            add(0, "intToText:");
+            add(1, "mov rcx, 0");
+            add(1, "mov ebx, 10");
+            add(1, "xor rdx, rdx");
+            add(0, ".ittLoop:");
+            add(1, "mov edx, 0");
+            add(1, "div ebx");
+            add(1, "add edx, 48");
+            add(1, "push rdx");
+            add(1, "inc rcx");
+            add(1, "cmp eax, 0");
+            add(1, "jne .ittLoop");
+            add(1, "lea rdi, [rel itt_bfr]");
+            add(1, "mov rdx, rcx");
+            add(1, "lea rsi, [rel itt_bfr]");
+            add(0, ".ittLoopWrite:");
+            add(1, "pop rax");
+            add(1, "mov [rdi], al");
+            add(1, "inc rdi");
+            add(1, "loop .ittLoopWrite");
+            add(1, "inc rdx");
+            add(1, "ret");
+            add(0, "; = = = PRINT = = =");
+            add(0, "; mov rsi, [text]");
+            add(0, "; mov rdx, [text length]");
+            add(0, "; call prt");
+            add(0, "prt:");
+            add(1, "mov rax, 1");
+            add(1, "mov rdi, 1");
+            add(1, "syscall");
+            add(1, "ret");
+            add(0, "prtln:");
+            add(1, "mov rsi, 10");
+            add(1, "mov rdx, 1");
+            add(1, "call prt");
+            add(1, "ret");
+            add(0, "; = = = PRINT BINARY = = =");
+            add(1, "; RT a, [value]");
+            add(1, "; RT b, [length]");
+            add(1, "; call prtB");
+            add(0, "prtB:");
+            add(1, "mov eax, [rel qaia]");
+            add(1, "lea rdi, [rel prtbh_bfr]");
+            add(1, "mov rcx, 32");
+            add(1, "sub rcx, [rel qaib]");
+            add(1, "shl eax, cl");
+            add(1, "mov rcx, [rel qaib]");
+            add(1, "lea rdi, [rel prtbh_bfr]");
+            add(0, ".prtBloop:");
+            add(1, "mov edx, eax");
+            add(1, "shr edx, 31");
+            add(1, "add dl, '0'");
+            add(1, "mov [rdi], dl");
+            add(1, "inc rdi");
+            add(1, "shl eax, 1");
+            add(1, "loop .prtBloop");
+            add(1, "mov rsi, prtbh_bfr");
+            add(1, "mov rdx, [rel qaib]");
+            add(1, "call prt");
+            add(1, "ret");
+            add(0, "; = = = PRINT HEX = = =");
+            add(1, "; RT a, [value]");
+            add(1, "; RT b, [length]");
+            add(1, "; call prtH");
+            add(0, "prtH:");
+            add(1, "mov eax, [rel qaia]");
+            add(1, "lea rdi, [rel prtbh_bfr]");
+            add(1, "mov rcx, 8");
+            add(1, "sub rcx, [rel qaib]");
+            add(1, "shl rcx, 2");
+            add(1, "shl eax, cl");
+            add(1, "mov rcx, [rel qaib]");
+            add(0, ".prtHloop:");
+            add(1, "rol eax, 4");
+            add(1, "mov edx, eax");
+            add(1, "and edx, 0xF");
+            add(1, "cmp dl, 9");
+            add(1, "jbe .prtHdigit");
+            add(1, "add dl, 7");
+            add(0, ".prtHdigit:");
+            add(1, "add dl, '0'");
+            add(1, "mov [rdi], dl");
+            add(1, "inc rdi");
+            add(1, "loop .prtHloop");
+            add(1, "mov rsi, [rel prtbh_bfr]");
+            add(1, "mov rdx, [rel qaib]");
+            add(1, "call prt");
+            add(1, "ret");
             return;
         }
         if (dataCollecting && !dataLoaded) {

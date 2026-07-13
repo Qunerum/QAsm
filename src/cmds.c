@@ -17,7 +17,7 @@ void call(char* args) { (void)args; fprintf(f, "\tcall %s ; Call step\n", args);
 void prt(char* args) { fprintf(f, "\tlea rsi, %s\n\tmov rdx, len_%s\n\tcall prt ; Print text\n", args, args); }
 void prtn(char* args) { fprintf(f, "\tmov eax, %s\n\tcall intToText\n\tcall prt ; Print number\n", args); }
 void prti(char* args) { fprintf(f, "\tmov eax, [rel %s]\n\tcall intToText\n\tcall prt ; Print int\n", args); }
-void prtln(char* args) { (void)args; fprintf(f, "\tlea rsi, [rel nl]\n\tmov rdx, nll\n\tcall prt ; Print line\n"); }
+void prtln(char* args) { (void)args; fprintf(f, "\tcall prtln ; Print line\n"); }
 
 void add(char* args) { split(args); fprintf(f, "\tadd dword [rel %s], %s ; Add\n", ct[5], ct[6]); }
 void sub(char* args) { split(args); fprintf(f, "\tsub dword [rel %s], %s ; Sub\n", ct[5], ct[6]); }
@@ -45,7 +45,7 @@ qaCmd cmds[] = {
     {"mul", mul},
     {"div", div},
 
-    {"t.", insertTab},
+    {".t", insertTab},
     {".", insert},
 };
 int cmd_count = sizeof(cmds) / sizeof(qaCmd);
