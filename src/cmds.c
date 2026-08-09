@@ -37,9 +37,6 @@ void muli(char* args) { split(args); fprintf(f, "\tmov eax, [rel %s]\n\timul eax
 void div(char* args) { split(args); fprintf(f, "\tmov eax, [rel %s]\n\tcdq\n\tmov ecx, %s\n\tidiv ecx\n\tmov [rel %s], eax ; Div\n", ct[5], ct[6], ct[5]); }
 void divi(char* args) { split(args); fprintf(f, "\tmov eax, [rel %s]\n\tcdq\n\tmov ecx, [rel %s]\n\tidiv ecx\n\tmov [rel %s], eax ; Div\n", ct[5], ct[6], ct[5]); }
 
-void sam(char* args) { fprintf(f, "\tsub rsp, 8\n\tmov dword [rsp], %s\n", args); }
-void eam(char* args) { fprintf(f, "\tadd rsp, 8\n"); }
-
 void insertTab(char* args) { fprintf(f, "\t%s\n", args); }
 void insert(char* args) { fprintf(f, "%s\n", args); }
 
@@ -70,9 +67,6 @@ qaCmd cmds[] = {
     {"muli", muli},
     {"div", div},
     {"divi", divi},
-
-    {"sam", sam},
-    {"eam", eam},
 
     {".t", insertTab},
     {".", insert},
